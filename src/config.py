@@ -32,8 +32,9 @@ cc_channel_in: int = 2
 # NOTE_NUMBERS is a tuple of MIDI note values.  The active value
 # can be selected directly from the CPX
 # using the buttons and neopixel interface.
-# The default values are based on the General MIDI specification
-# for percussion values and correspond to:
+# The default values match that of the PERFEC Euclidian Sequencer
+# and are based on the General MIDI specification
+# for percussion values:
 
 '''
  * 36/C1: bass drum
@@ -44,22 +45,28 @@ cc_channel_in: int = 2
  * 42/F#1: closed hi-hat
 '''
 
-
+# You may want to change these numbers to match whatever source
+# of MIDI NoteOn messages you're working with.  You can trigger
+# your samples by playing the corresponding notes as shown above
+# on a keyboard.
 
 NOTE_NUMBERS: tuple[int] = const((36, 40, 43, 41, 46, 42))
 
-
-# DEFAULT_NOTE note index this sequence sends out when restarted:
+# DEFAULT_NOTE is the index of the note this sample player
+# will respond to when receiving a MIDI NoteOn message.
 # Adjust this to create a pleasant default setting for
 # multiple sequencers and voices.
+
 DEFAULT_NOTE: int = 0
 
 
 # CC values
 # Leave this empty if you don't want/need CC control
-# CC_VALUES = {}
-CC_VALUES = {16 : 'sample_index',
-             20 : 'bank_index'}
+CC_VALUES = {}
+
+# example
+# CC_VALUES = {16 : 'sample_index',
+#              20 : 'bank_index'}
 
 
 # Enable the onboard speaker.
