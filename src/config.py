@@ -20,11 +20,8 @@ USB_NAME: str = "PLAYER" + str(CPX_NUMBER)
 # Input channels for MIDI messages
 # This is the "raw" 0-15 scale used in code, rather than 1-16 as is often displayed.
 
-# channel for note messages
+# Channel for incoming NoteOn messages.
 note_channel_in: int = 0
-
-# channel for cc messages
-cc_channel_in: int = 2
 
 
 # Setting Available Notes
@@ -59,16 +56,6 @@ NOTE_NUMBERS: tuple[int] = const((36, 40, 43, 41, 46, 42))
 
 DEFAULT_NOTE: int = 0
 
-
-# CC values
-# Leave this empty if you don't want/need CC control
-CC_VALUES = {}
-
-# example
-# CC_VALUES = {16 : 'sample_index',
-#              20 : 'bank_index'}
-
-
 # Enable the onboard speaker.
 # Probably True for initial testing, False once you're connected to a real speaker.
 
@@ -96,8 +83,6 @@ BANK_COLORS: tuple[tuple[int]] = const(((0, 0, 16), (16, 0, 0), (0, 16, 0)))
 SELECTION_COLOR = const((16, 16, 16))
 
 
-
-
 # MIDI repeat count
 # this is the number of times we check and process the MIDI queue
 # for every time we check and update the board buttons, neopixels, etc.
@@ -107,8 +92,27 @@ SELECTION_COLOR = const((16, 16, 16))
 MIDI_READ_REPEAT = 256
 
 
-# MPK knob notes...
-# start at lowest value, go up to highest 7F by default.
-# so we can just add this to the current number?
-# we do need to store it in the model.
+# If we want to implement MIDI Control Change
+# messages, primarily to allow you to change
+# bank and sample selections from a separate 
+# MIDI controller.
+
+CC_ON = False
+
+# channel for cc messages
+cc_channel_in: int = 2
+
+# CC values
+# Leave this empty if you don't want/need CC control
+CC_VALUES = {}
+
+# example usage:
+# See midi_controller.py for additional code needed to
+# implement whatever CC control values your
+# controller sends.
+# CC_VALUES = {16 : 'sample_index',
+#              20 : 'bank_index'}
+
+
+
 
