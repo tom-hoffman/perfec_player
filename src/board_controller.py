@@ -4,14 +4,14 @@ import config
 class View(object):
 
     def __init__(self, model, pix=cpx.pix):
-        self.model = model 
+        self.model = model
         self.pix = pix
 
     def main(self):
         # called by code.py regularly
         self.check_buttons()
         if self.model.update_display:
-            self.update_pixels()  
+            self.update_pixels()
         return self
 
 class ActiveView(View):
@@ -31,10 +31,10 @@ class ActiveView(View):
             self.model.increment_sample()
 
     def update_background(self):
-        self.pix.fill(config._BANK_COLORS[self.model.bank_index])
+        self.pix.fill(config.BANK_COLORS[self.model.bank_index])
 
     def update_selection(self):
-        self.pix[self.model.sample_index] = config._SELECTION_COLOR
+        self.pix[self.model.sample_index] = config.SELECTION_COLOR
 
     def update_pixels(self):
         self.update_background()
@@ -58,7 +58,7 @@ class ConfigurationView(View):
             return self
         else:
             self.model.update_display = True
-            return ActiveView(self.model, self.pix)    
+            return ActiveView(self.model, self.pix)
 
     def update_pixels(self):
         self.pix.fill((0, 32, 0))
