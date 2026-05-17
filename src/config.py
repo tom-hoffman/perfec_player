@@ -47,14 +47,14 @@ note_channel_in: int = 0
 # your samples by playing the corresponding notes as shown above
 # on a keyboard.
 
-NOTE_NUMBERS: tuple[int] = const((36, 40, 43, 41, 46, 42))
+NOTE_TUPLE: tuple[int] = const((36, 40, 43, 41, 46, 42))
 
 # DEFAULT_NOTE is the index of the note this sample player
 # will respond to when receiving a MIDI NoteOn message.
 # Adjust this to create a pleasant default setting for
 # multiple sequencers and voices.
 
-DEFAULT_NOTE: int = 0
+DEFAULT_NOTE_INDEX: int = 0
 
 # Enable the onboard speaker.
 # Probably True for initial testing, False once you're connected to a real speaker.
@@ -96,8 +96,6 @@ MIDI_READ_REPEAT = 256
 # messages, primarily to allow you to change
 # bank and sample selections from a separate 
 # MIDI controller.
-
-CC_ON = False
 
 # channel for cc messages
 cc_channel_in: int = 2

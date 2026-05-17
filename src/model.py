@@ -7,10 +7,14 @@ def update_index(button_count: int, cc_count: int, mod: int):
     return (button_count + cc_count) % mod
 
 class PlayerModel(object):
-    def __init__(self, note=config.note_number, 
-                 bank_button_count=config.STARTING_BANK_INDEX, bank_cc_count=0, 
+    def __init__(self, note_index=config.DEFAULT_NOTE_INDEX, 
+                 note_tuple=config.NOTE_TUPLE,
+                 bank_button_count=config.STARTING_BANK_INDEX, 
+                 bank_cc_count=0, 
                  sample_button_count=0, sample_cc_count=0, wav=None):
-        self.note = note
+        self.note_index = note_index
+        self.note_tuple = note_tuple
+        self.note = note_tuple[note_index]
         self.bank_button_count = bank_button_count
         self.bank_cc_count = bank_cc_count
         self.bank_index = update_index(bank_button_count, bank_cc_count, len(config.BANKS))
@@ -49,4 +53,9 @@ class PlayerModel(object):
         fileName = os.listdir(path)[0]
         self.wav_file = open(path + '/' + fileName, 'rb')
         self.wav = WaveFile(self.wav_file)
+
+    def increment_note(self):
+        self.note_index = (self.note_index +1) % len(config.NOTE_TUPLE)
+        self.note = self.note_tuple[self.note_index]
+        self.update_display = True
 

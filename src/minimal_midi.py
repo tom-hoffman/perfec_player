@@ -72,26 +72,10 @@ class MinimalMidi(object):
             return self.process_note('NoteOff')
         else:
             return None
-        
-    '''
-    # don't need yet...?
-    # also update for different cc channel
-    def switch_channel(self, ch: int):
-        self.in_channel = ch & _FOUR_BIT_MASK
-        self.note_on_value = generate_status_byte(ch, _NOTE_ON_NYBBLE)
-        self.note_off_value = generate_status_byte(ch, _NOTE_OFF_NYBBLE)
-        self.cc_value = generate_status_byte(ch, _CC_NYBBLE)       
-    '''
 
-
-    
-
-
-
-
-
-    
-
-
-    
-
+    def increment_channel(self):
+        '''Add one to the note channel.'''
+        # AND below is equivalent to MOD 16.
+        self.note_in_channel = (self.note_in_channel + 1) & _FOUR_BIT_MASK  
+        self.note_on_value = generate_status_byte(self.note_in_channel, _NOTE_ON_NYBBLE)
+        self.note_off_value = generate_status_byte(self.note_in_channel, _NOTE_OFF_NYBBLE)
