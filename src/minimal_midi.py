@@ -52,7 +52,6 @@ class MinimalMidi(object):
         return {'type' : 'CC', 'function' : f, 'value' : v}
 
     def process_note(self, m: str) -> dict:
-        print("Hitting midi library.")
         n = ord(_INNIE.read(1))
         v = ord(_INNIE.read(1))
         return {'type' : m, 'note' : n, 'velocity' : v}
