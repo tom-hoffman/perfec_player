@@ -21,7 +21,7 @@ USB_NAME: str = "PLAYER" + str(CPX_NUMBER)
 # This is the "raw" 0-15 scale used in code, rather than 1-16 as is often displayed.
 
 # Channel for incoming NoteOn messages.
-note_channel_in: int = 0
+note_channel_in: int = 9
 
 
 # Setting Available Notes
@@ -94,7 +94,7 @@ MIDI_READ_REPEAT = 256
 
 # If we want to implement MIDI Control Change
 # messages, primarily to allow you to change
-# bank and sample selections from a separate 
+# bank and sample selections from a separate
 # MIDI controller.
 
 # channel for cc messages
