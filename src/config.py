@@ -65,6 +65,13 @@ SPEAKER_ENABLE: bool = True
 
 BANKS: tuple[str] = const(("blue", "red", "green"))
 
+# Neopixel RGB colors associate with each bank.
+BANK_COLORS: tuple[tuple[int]] = const(((0, 0, 16), (16, 0, 0), (0, 16, 0)))
+
+
+# Color of neopixel indicating the active sample.
+SELECTION_COLOR = const((16, 16, 16))
+
 
 # Number of directories containing samples in each bank
 
@@ -74,13 +81,6 @@ SAMPLE_COUNT: int = 10
 # Bank which will be enabled when the CPX is booted (by index number)
 
 STARTING_BANK_INDEX: int = 0
-
-
-# Neopixel RGB colors associate with each bank.
-BANK_COLORS: tuple[tuple[int]] = const(((0, 0, 16), (16, 0, 0), (0, 16, 0)))
-
-# Color of neopixel indicating the active sample.
-SELECTION_COLOR = const((16, 16, 16))
 
 
 # MIDI repeat count
