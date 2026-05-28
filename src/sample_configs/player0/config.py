@@ -8,13 +8,22 @@
 from micropython import const
 
 # Assign this CPX a one digit identifier different than other modules
-# of the same type.
+# of the same type.  This is also used to indicate the index of the note
+# the player listens for, unless you override that below (DEFAULT_NOTE_INDEX).
 
 CPX_NUMBER: int = 0
 
 # Give each Circuit Playground a unique name so you don't get confused!
 
 USB_NAME: str = "PLAYER" + str(CPX_NUMBER)
+
+
+# Input channels for MIDI messages
+# This is the "raw" 0-15 scale used in code, rather than 1-16 as is often displayed.
+
+# Channel for incoming NoteOn messages.
+note_channel_in: int = 9
+
 
 # Setting Available Notes
 #
@@ -46,22 +55,12 @@ NOTE_TUPLE: tuple[int] = const((36, 40, 43, 41, 46, 42))
 # Adjust this to create a pleasant default setting for
 # multiple sequencers and voices.
 
-# By default the note index is the same as the CPX_NUMBER
-# indicated above.  You can change it to a specific value
-# if you wish.
-
-DEFAULT_NOTE_INDEX: int = CPX_NUMBER
+DEFAULT_NOTE_INDEX: int = 0
 
 # Enable the onboard speaker.
 # Probably True for initial testing, False once you're connected to a real speaker.
 
 SPEAKER_ENABLE: bool = True
-
-# Input channel for MIDI messages
-# This is the "raw" 0-15 scale used in code, rather than 1-16 as is often displayed.
-
-# Channel for incoming NoteOn messages.
-note_channel_in: int = 9
 
 # Names of directories ("banks") containing (directories containing) samples.
 
@@ -78,6 +77,7 @@ SELECTION_COLOR = const((16, 16, 16))
 # Number of directories containing samples in each bank
 
 SAMPLE_COUNT: int = 10
+
 
 # Bank which will be enabled when the CPX is booted (by index number)
 
