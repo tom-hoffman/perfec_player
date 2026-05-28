@@ -7,6 +7,12 @@
 
 from micropython import const
 
+# Enable the onboard speaker.
+# Probably True for initial testing, False once you're connected to a real speaker.
+
+SPEAKER_ENABLE: bool = True
+
+
 # Assign this CPX a one digit identifier different than other modules
 # of the same type.
 
@@ -51,11 +57,6 @@ NOTE_TUPLE: tuple[int] = const((36, 40, 43, 41, 46, 42))
 # if you wish.
 
 DEFAULT_NOTE_INDEX: int = CPX_NUMBER
-
-# Enable the onboard speaker.
-# Probably True for initial testing, False once you're connected to a real speaker.
-
-SPEAKER_ENABLE: bool = True
 
 # Input channel for MIDI messages
 # This is the "raw" 0-15 scale used in code, rather than 1-16 as is often displayed.
