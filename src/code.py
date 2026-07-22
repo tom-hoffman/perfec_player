@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025 Tom Hoffman & E-Cubed students
 # SPDX-License-Identifier: MIT
-# Modular Playground Application Template
-# Module Description: Main runtime coordinator loop
+# PERFEC Player -- PERFEC System Sample Player
+# Module Description: Main runtime loop
 
 import gc
 print("Starting memory: " + str(gc.mem_free()))
@@ -18,25 +18,26 @@ print("After board controller: " + str(gc.mem_free()))
 
 # Initialize core model and load initial sample file handle
 tm: PlayerModel = PlayerModel()
-tm.change_sample()
 
 # Pre-instantiate our MIDI parser and primary state engine context
-midi: MinimalMidi = MinimalMidi(config.note_channel_in, config.cc_channel_in)
+midi: MinimalMidi = MinimalMidi(config.note_channel_in)
 mc: midi_controller.MidiController = midi_controller.MidiController(tm, midi)
 
 # Pre-instantiate ALL possible views once at boot time to prevent dynamic heap fragmentation
 view_active = board_controller.ActiveView(tm, midi)
 view_config = board_controller.ConfigurationView(tm, midi)
 
-# Fast dictionary map to swap active view modes allocation-free based on the slide switch state
-# True (Switch Left) -> Configuration Menu | False (Switch Right) -> Live Sample Player
-view_map: dict = {
-    False: view_active,
-    True: view_config
-}
+# Store pointers to the view choices right inside the view objects so they can 
+# route to each other allocation-free at runtime without needing complex cross-file lookups
+view_active.target_mode_view = view_config
+view_config.target_mode_view = view_active
 
-# Determine our initial view layout state based on the physical switch position
-bc = view_map[board_controller.cpx.switch_is_left()].update_mode()
+# Set our initial view layout state based on the physical switch position
+if board_controller.cpx.switch_is_left():
+    bc = view_config
+else:
+    bc = view_active
+    
 bc.update_pixels()
 
 # Set garbage collection to only happen when explicitly triggered outside active playback windows.
@@ -51,9 +52,7 @@ while True:
     # 1. High-Priority MIDI Parsing: Drains the incoming buffer queue in a fast block
     mc = mc.main()
     
-    # 2. State-Machine Synchronization & Input Polling: 
-    # Only updates modes and polls physical button inputs if a state change is flagged,
-    # keeping the execution loop focused entirely on real-time MIDI audio playback!
-    if tm.update_display:
-        bc = view_map[board_controller.cpx.switch_is_left()].update_mode()
-        bc = bc.main()
+    # 2. State-Machine Synchronization & Physical Button Input Polling:
+    # Check for layout changes and process human button interface clicks smoothly
+    bc = bc.update_mode()
+    bc = bc.main()

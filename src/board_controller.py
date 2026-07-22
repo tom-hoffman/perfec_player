@@ -1,4 +1,4 @@
-# PERFEC System Sample Player
+# PERFEC System Euclidian Sequencer
 # board_controller.py
 # copyright 2026, Tom Hoffman
 # MIT License
@@ -12,6 +12,8 @@ class View(object):
         self.model = model
         self.midi = midi
         self.pix = pix
+        # Placeholder pointer to the opposite layout state to allow allocation-free swapping
+        self.target_mode_view = None
 
     def main(self) -> "View":
         # called by code.py regularly
@@ -28,10 +30,10 @@ class View(object):
 
 class ActiveView(View):
     def update_mode(self) -> "View":
-        # Check the switch and return current mode.
+        # If the switch is left, route straight to our pre-instantiated config view layout
         if cpx.switch_is_left():
             self.model.update_display = True
-            return ConfigurationView(self.model, self.midi, self.pix)
+            return self.target_mode_view
         else:
             return self
 
@@ -68,18 +70,19 @@ class ConfigurationView(View):
             self.model.update_display = True
 
     def update_mode(self) -> "View":
-        if cpx.switch_is_left():
-            return self
-        else:
+        # If the switch is right, route straight back to our live sample playback layout
+        if not cpx.switch_is_left():
             self.model.update_display = True
-            return ActiveView(self.model, self.midi, self.pix)
+            return self.target_mode_view
+        else:
+            return self
 
     def display_note(self) -> None:
-        # Upward-growing violet note tracker handling 6 options (0 to 5 LEDs lit)
+        # Upward-growing Cyan note tracker (Green + Blue) handling 6 options (0 to 5 LEDs lit)
         idx: int = self.model.note_index
         for i in range(5):
             if i < idx:
-                cpx.pix[4 - i] = (32, 0, 32)
+                cpx.pix[4 - i] = (0, 32, 32)
             else:
                 cpx.pix[4 - i] = (0, 0, 0)
 
@@ -87,7 +90,6 @@ class ConfigurationView(View):
         '''Uses a four bit binary number to display the active channel layout on LEDs 5-8.'''
         n: int = self.midi.note_in_channel
         for i in range(4):
-            # Bitwise check: if the bit at 2^i position is high (1)
             if n & (1 << i):
                 # Bright Yellow/Amber color (Green + Red) representing 1
                 cpx.pix[5 + i] = (32, 32, 0)
@@ -95,7 +97,7 @@ class ConfigurationView(View):
                 # Dim White/Purple representing 0
                 cpx.pix[5 + i] = (8, 0, 8)
                 
-        # Turn the remaining last pixel (LED 9) completely off to preserve the 4-bit UI boundary
+        # Access index 9 directly to turn the last pixel off safely without breaking the object pointer
         cpx.pix[9] = (0, 0, 0)
 
     def update_pixels(self) -> None:

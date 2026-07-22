@@ -6,93 +6,77 @@
 
 from micropython import const
 
-# Enable the onboard speaker.
+# Enable the tiny speaker built into the Circuit Playground Express.
 # Probably True for initial testing, False once you're connected to a real speaker.
 SPEAKER_ENABLE: bool = True
 
 # Assign this CPX a one digit identifier different than other modules
 # of the same type.
 CPX_NUMBER: int = 0
-
-# Give each Circuit Playground a unique name so you don't get confused!
+# By default, the device name will be PLAYER + the CPX_NUMBER.
 USB_NAME: str = "PLAYER" + str(CPX_NUMBER)
 
-# Setting Available Notes
-#
-# NOTE_NUMBERS is a tuple of MIDI note values. The active value
-# can be selected directly from the CPX
-# using the buttons and neopixel interface.
-# The default values match that of the PERFEC Euclidian Sequencer
-# and are based on the General MIDI specification
-# for percussion values:
-'''
-* 36/C1: bass drum
-* 40/E1: electric snare
-* 43/G1: high tom-tom
-* 41/F1: low tom-tom
-* 46/Bb1: open hi-hat
-* 42/F#1: closed hi-hat
-'''
-# You may want to change these numbers to match whatever source
-# of MIDI NoteOn messages you're working with. You can trigger
-# your samples by playing the corresponding notes as shown above
-# on a keyboard.
-NOTE_TUPLE: tuple[int] = const((36, 40, 43, 41, 46, 42))
 
-# DEFAULT_NOTE is the index of the note this sample player
-# will respond to when receiving a MIDI NoteOn message.
-# Adjust this to create a pleasant default setting for
-# multiple sequencers and voices.
-# By default the note index is the same as the CPX_NUMBER
-# indicated above. You can change it to a specific value
-# if you wish.
-DEFAULT_NOTE_INDEX: int = CPX_NUMBER
+# STARTING VALUES
 
-# Input channel for MIDI messages
+# Input channels for incoming MIDI messages.
 # This is the "raw" 0-15 scale used in code, rather than 1-16 as is often displayed.
-# Channel for incoming NoteOn messages.
+# "Raw" channel 9 corresponds to Channel 10 on commercial synthesizers.
 note_channel_in: int = 9
 
-# Names of directories ("banks") containing (directories containing) samples.
-BANKS: tuple[str] = const(("blue", "red", "green"))
+# Starting Indexed Values
+# These are all settings which are based on selecting one
+# value out of a list. 
 
-# Neopixel RGB colors associate with each bank.
-BANK_COLORS: tuple[tuple[int]] = const(((0, 0, 16), (16, 0, 0), (0, 16, 0)))
+# DEFAULT_NOTE_INDEX (range 0 - 5)
+# The pitch index this sampler listens for to trigger audio.
+# Change on CPX by pressing A in config mode while clock is stopped.
+# Represented by cyan neopixels.
+DEFAULT_NOTE_INDEX: int = CPX_NUMBER
 
-# Color of neopixel indicating the active sample.
+# STARTING_BANK_INDEX (range 0 - 2)
+# The starting folder directory ("bank") loaded at boot time.
+# Change on CPX by pressing A in live mode.
+# Displays a background a distinct color (blue, red, or green).
+STARTING_BANK_INDEX: int = 0
+
+# DEFAULT_SAMPLE_INDEX (range 0 - 9)
+# The starting individual sample slot number activated at boot.
+# Change on CPX by pressing B in live mode.
+# Highlighted on the ring by a single white cursor.
+DEFAULT_SAMPLE_INDEX: int = 0
+
+
+# Value lists
+# Generally you won't need to change these, 
+# unless you want a special distribution, EXCEPT:
+
+# Setting Available Notes
+# This list maps the 6 index choices to standard MIDI pitches.
+# Incoming NoteOn messages matching your choice will strike the sampler.
+NOTE_TUPLE: tuple = const((36, 40, 43, 41, 46, 42))
+
+# Names of directories ("banks") containing sample files.
+BANKS: tuple = const(("blue", "red", "green"))
+
+# Neopixel RGB colors associated with each corresponding folder bank.
+BANK_COLORS: tuple = const(((0, 0, 16), (16, 0, 0), (0, 16, 0)))
+
+# Color of the single neopixel cursor tracking the active sample slot choice.
 SELECTION_COLOR = const((16, 16, 16))
 
-# Number of directories containing samples in each bank
+# Total number of sample sub-directories mapped inside each audio bank.
 SAMPLE_COUNT: int = 10
 
-# Bank which will be enabled when the CPX is booted (by index number)
-STARTING_BANK_INDEX: int = 0
 
 # MIDI repeat count
 # this is the number of times we check and process the MIDI queue
 # for every time we check and update the board buttons, neopixels, etc.
 # raising this value reduces audible rhythm lag
 # reducing this value decreases button and neopixel lag
-MIDI_READ_REPEAT = 256
+MIDI_READ_REPEAT: int = 256
 
-# If we want to implement MIDI Control Change
-# messages, primarily to allow you to change
-# bank and sample selections from a separate
-# MIDI controller.
-# channel for cc messages
-cc_channel_in: int = 2
-
-# CC values
-# Leave this empty if you don't want/need CC control
-CC_VALUES = {}
-
-# example usage:
-# See midi_controller.py for additional code needed to
-# implement whatever CC control values your
-# controller sends.
-# CC_VALUES = {16 : 'sample_index',
-# 20 : 'bank_index'}
-
-# Pre-allocated range loop based on the configuration setting
+# Pre-allocated range loop based on the configuration setting 
 # to optimize execution speed without allocating RAM at runtime
+# Do not change this.
 ACTIVE_REPEATS = range(MIDI_READ_REPEAT)
