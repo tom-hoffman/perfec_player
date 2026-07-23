@@ -14,7 +14,7 @@ import sys
 
 DONT_PRECOMPILE = {"boot.py", "code.py", "config.py", "make.py"}
 DONT_UPDATE = {"config.py"}
-SKIP = {"make.py"}
+SKIP = {"make.py", "make_release.py", "__pycache__"}
 PY_EXT = "py"
 
 # Supported target versions
@@ -75,19 +75,18 @@ def fetch_mpy_cross(platform: str, version: str) -> Path:
 def compile_and_copy(local_path: Path, remote_path: Path, mpy_cross_exe: Path) -> None:
     """Process a single file with compilation + fallback copy logic."""
     try:
-        # Try compiling first
-        subprocess.run(
-            [str(mpy_cross_exe), str(local_path)],
+        # Use the explicit output flag '-o' to make mpy-cross compile 
+        # and drop the bytecode file directly into the target volume allocation-free!
+        result = subprocess.run(
+            [str(mpy_cross_exe), "-o", str(remote_path), str(local_path)],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             check=False
         )
-        # Check if compiler produced expected file locally
-        local_compiled = Path(f"{local_path.stem}.mpy")
-        if local_compiled.exists():
-            shutil.move(str(local_compiled), str(remote_path))
-        else:
-            raise FileNotFoundError("Compiled file not found locally after running compiler.")
+        
+        # Verify if the target bytecode file path exists successfully on the target side
+        if not remote_path.exists():
+            raise FileNotFoundError("Target .mpy file descriptor was not successfully written to destination.")
     except Exception as e:
         print(f" ! Compilation failed ({e}), copying directly...")
         shutil.copyfile(str(local_path), str(remote_path))
@@ -103,7 +102,6 @@ def main():
     
     args = parser.parse_args()
     
-    # Validation: Check if requested CircuitPython version is supported
     if args.version not in SUPPORTED_VERSIONS:
         sorted_versions = sorted(list(SUPPORTED_VERSIONS))
         print(f"Error: CircuitPython version '{args.version}' is not supported.")
@@ -119,7 +117,7 @@ def main():
         if args.count < 1:
             print("Error: Count must be 1 or greater.")
             sys.exit(1)
-        base_path = Path(args.target_dir)
+        base_path = args.target_dir
         for i in range(1, args.count + 1):
             target_paths.append(Path(f"{base_path}{i}"))
     else:
@@ -179,7 +177,6 @@ def main():
                 else:
                     compile_and_copy(local_path, remote_path, mpy_cross_exe)
                     print(f" ✓ Compiled and copied: {remote_path.name}")
-
 
 if __name__ == "__main__":
     main()
